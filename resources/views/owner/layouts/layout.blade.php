@@ -13,12 +13,14 @@
     <aside class="w-64 bg-gray-800 text-white min-h-screen p-5">
         <h2 class="text-2xl font-bold mb-8">Owner Panel</h2>
         <ul class="space-y-3">
-            <li><a href="{{ route('owner.dashboard') }}" class="block py-2 px-3 rounded hover:bg-gray-700">📊
+            <li><a href="{{ route('owner.dashboard') }}" class="block py-2 px-3 rounded hover:bg-gray-700">
                     Dashboard</a></li>
+            <li><a href="{{ route('owner.suppliers.index') }}" class="block py-2 px-3 rounded hover:bg-gray-700">
+                    Manajemen Supplier</a></li>
             <li>
                 <form action="{{ route('owner.logout') }}" method="POST">
                     @csrf
-                    <button class="w-full text-left py-2 px-3 rounded hover:bg-red-600">🚪 Logout</button>
+                    <button class="w-full text-left py-2 px-3 rounded hover:bg-red-600">Logout</button>
                 </form>
             </li>
         </ul>
