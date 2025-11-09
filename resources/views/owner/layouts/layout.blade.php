@@ -17,6 +17,8 @@
                     Dashboard</a></li>
             <li><a href="{{ route('owner.suppliers.index') }}" class="block py-2 px-3 rounded hover:bg-gray-700">
                     Manajemen Supplier</a></li>
+            <li><a href="{{ route('owner.purchases.index') }}" class="block py-2 px-3 rounded hover:bg-gray-700">
+                    Manajemen Pembelian Bahan Baku</a></li>
             <li>
                 <form action="{{ route('owner.logout') }}" method="POST">
                     @csrf
