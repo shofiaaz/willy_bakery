@@ -10,5 +10,7 @@ Route::prefix('owner')->group(function () {
 
     Route::middleware('auth')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('owner.dashboard');
+        Route::post('dashboard/filter', [DashboardController::class, 'filter'])->name('owner.dashboard.filter');
     });
+
 });
