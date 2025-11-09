@@ -2,13 +2,28 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Notifications\Notifiable;
 
-class User extends Model
+class User extends Authenticatable
 {
+    use HasFactory, Notifiable;
+
     protected $primaryKey = 'user_id';
     public $timestamps = false;
-    protected $fillable = ['username', 'password', 'role', 'email', 'phone'];
+
+    protected $fillable = [
+        'username',
+        'password',
+        'role',
+        'email',
+        'phone',
+    ];
+
+    protected $hidden = [
+        'password',
+    ];
 
     public function profile()
     {
