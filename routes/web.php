@@ -3,6 +3,7 @@
 use App\Http\Controllers\Owner\AuthController;
 use App\Http\Controllers\Owner\DashboardController;
 use App\Http\Controllers\Owner\PurchaserOrderController;
+use App\Http\Controllers\Owner\ReportController;
 use App\Http\Controllers\Owner\SaleController;
 use App\Http\Controllers\Owner\SupplierController;
 
@@ -21,6 +22,9 @@ Route::prefix('owner')->group(function () {
         Route::resource('suppliers', SupplierController::class, ['as' => 'owner']);
         Route::resource('purchases', PurchaserOrderController::class, ['as' => 'owner']);
         Route::resource('sales', SaleController::class, ['as' => 'owner']);
+        Route::get('reports', [ReportController::class, 'index'])->name('owner.reports.index');
+        Route::get('reports/pdf/{type}', [ReportController::class, 'exportPdf'])->name('owner.reports.pdf');
+        Route::get('reports/excel/{type}', [ReportController::class, 'exportExcel'])->name('owner.reports.excel');
     });
 
 });

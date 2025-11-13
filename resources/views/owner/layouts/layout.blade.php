@@ -131,6 +131,13 @@
                         <span>Manajemen Karyawan</span>
                     </a>
                 </li>
+                <li>
+                    <a href="{{ route('owner.reports.index') }}"
+                        class="flex items-center py-3 px-4 rounded-lg hover:bg-bread-700 transition-colors duration-200 {{ request()->routeIs('owner.reports.index') ? 'active-nav' : '' }}">
+                        <i class="fas fa-shopping-basket w-5 mr-3 text-bread-300"></i>
+                        <span>Laporan</span>
+                    </a>
+                </li>
             </ul>
         </nav>
 
