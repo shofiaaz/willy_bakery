@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
+use App\Models\InventoryLog;
 use App\Models\PurchaserOrder;
 use App\Models\PurchaserOrderItem;
 use App\Models\RawMaterial;
@@ -95,15 +96,13 @@ class PurchaserOrderController extends Controller
 
         DB::beginTransaction();
         try {
-            $order->update([
-                'status' => $request->status,
-            ]);
+            $previousStatus = $order->status;
+
+            $order->update(['status' => $request->status]);
 
             $order->items()->delete();
 
-            $total = collect($request->materials)->sum(function ($item) {
-                return $item['quantity'] * $item['price'];
-            });
+            $total = collect($request->materials)->sum(fn($item) => $item['quantity'] * $item['price']);
 
             foreach ($request->materials as $item) {
                 PurchaserOrderItem::create([
@@ -116,6 +115,25 @@ class PurchaserOrderController extends Controller
             }
 
             $order->update(['total_price' => $total]);
+
+            if ($previousStatus !== 'Completed' && $request->status === 'Completed') {
+                foreach ($request->materials as $item) {
+                    $material = RawMaterial::find($item['material_id']);
+                    $oldStock = $material->stock;
+                    $material->increment('stock', $item['quantity']);
+
+                    InventoryLog::create([
+                        'material_id' => $material->material_id,
+                        'user_id' => Auth::id(),
+                        'change_type' => 'IN',
+                        'quantity_changed' => $item['quantity'],
+                        'previous_stock' => $oldStock,
+                        'new_stock' => $material->stock,
+                        'notes' => 'Penambahan stok dari pesanan pembelian #' . $order->order_id,
+                        'created_at' => Carbon::now(),
+                    ]);
+                }
+            }
 
             DB::commit();
             return redirect()->route('owner.purchases.index')->with('success', 'Pesanan berhasil diperbarui.');

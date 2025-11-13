@@ -111,6 +111,13 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('owner.sales.index') }}"
+                        class="flex items-center py-3 px-4 rounded-lg hover:bg-bread-700 transition-colors duration-200 {{ request()->routeIs('owner.sales.index') ? 'active-nav' : '' }}">
+                        <i class="fas fa-shopping-basket w-5 mr-3 text-bread-300"></i>
+                        <span>Pembelian dan Pelanggan</span>
+                    </a>
+                </li>
+                <li>
                     <a href="#"
                         class="flex items-center py-3 px-4 rounded-lg hover:bg-bread-700 transition-colors duration-200">
                         <i class="fas fa-boxes w-5 mr-3 text-bread-300"></i>
