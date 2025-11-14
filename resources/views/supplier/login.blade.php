@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Owner - Toko Roti</title>
+    <title>Login Supplier - Toko Roti</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -68,7 +68,7 @@
                 <i class="fas fa-bread-slice text-white text-3xl"></i>
             </div>
             <h1 class="text-3xl font-bold text-bread-800">Willy Bakery</h1>
-            <p class="text-bread-600 mt-2">Owner Panel Login</p>
+            <p class="text-bread-600 mt-2">Supplier Panel Login</p>
         </div>
 
         <div class="bg-white rounded-2xl card-shadow p-8">
@@ -161,7 +161,7 @@
             <div class="mt-6 pt-6 border-t border-bread-100 text-center">
                 <p class="text-bread-500 text-sm">
                     <i class="fas fa-shield-alt mr-1"></i>
-                    Akses terbatas untuk pemilik toko roti
+                    Akses terbatas untuk supplier toko roti
                 </p>
             </div>
         </div>

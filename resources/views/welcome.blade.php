@@ -242,7 +242,7 @@
                     </div>
                 </a>
 
-                <a href="#" class="link-card">
+                <a href="{{ route('produksi.login') }}" class="link-card">
                     <div class="link-icon">
                         <i class="fas fa-industry"></i>
                     </div>
