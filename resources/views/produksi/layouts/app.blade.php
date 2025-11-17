@@ -104,17 +104,25 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('produksi.production.index') }}"
-                        class="flex items-center py-3 px-4 rounded-lg hover:bg-bread-700 transition-colors duration-200 {{ request()->routeIs('produksi.production.index') ? 'active-nav' : '' }}">
-                        <i class="fa fa-industry w-5 mr-3 text-bread-300"></i>
-                        <span>Managemen Produksi</span>
-                    </a>
-                </li>
-                <li>
                     <a href="{{ route('produksi.product.index') }}"
                         class="flex items-center py-3 px-4 rounded-lg hover:bg-bread-700 transition-colors duration-200 {{ request()->routeIs('produksi.product.index') ? 'active-nav' : '' }}">
                         <i class="fas fa-shopping-basket w-5 mr-3 text-bread-300"></i>
                         <span>Manajemen produk</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('produksi.recipe.index') }}"
+                        class="flex items-center py-3 px-4 rounded-lg hover:bg-bread-700 transition-colors duration-200 
+                        {{ request()->routeIs('produksi.recipe.*') ? 'active-nav' : '' }}">
+                        <i class="fas fa-list w-5 mr-3 text-bread-300"></i>
+                        <span>Resep Produk</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('produksi.production.index') }}"
+                        class="flex items-center py-3 px-4 rounded-lg hover:bg-bread-700 transition-colors duration-200 {{ request()->routeIs('produksi.production.index') ? 'active-nav' : '' }}">
+                        <i class="fa fa-industry w-5 mr-3 text-bread-300"></i>
+                        <span>Managemen Produksi</span>
                     </a>
                 </li>
             </ul>

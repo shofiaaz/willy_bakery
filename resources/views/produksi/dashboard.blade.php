@@ -9,7 +9,7 @@
 </div>
 
 {{-- ============================
-    FILTER PANEL (Same UI as Owner)
+    FILTER PANEL
 ================================ --}}
 <div x-data="{ filter: '{{ request('filter_type', '7_days') }}' }"
     class="mb-8 bg-white rounded-2xl card-shadow p-6">

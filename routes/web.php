@@ -4,6 +4,7 @@ use App\Http\Controllers\Produksi\ProduksiDashboardController;
 use App\Http\Controllers\Produksi\ProduksiProductController;
 use App\Http\Controllers\Produksi\ProduksiProductionController;
 use App\Http\Controllers\Produksi\ProduksiSupplyController;
+use App\Http\Controllers\Produksi\ProduksiRecipeController;
 use App\Http\Controllers\Supplier\SupplierAuthController;
 use App\Http\Controllers\Supplier\SupplierDashboardController;
 use App\Http\Controllers\Supplier\SupplierPurchaseController;
@@ -62,6 +63,9 @@ Route::prefix('produksi')->name('produksi.')->group(function () {
         Route::resource('supplies', ProduksiSupplyController::class);
         Route::resource('production', ProduksiProductionController::class);
         Route::resource('product', ProduksiProductController::class);
+        Route::resource('recipe', ProduksiRecipeController::class);
+
+
     });
 });
 

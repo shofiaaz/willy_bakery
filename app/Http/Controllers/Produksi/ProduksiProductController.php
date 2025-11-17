@@ -3,63 +3,70 @@
 namespace App\Http\Controllers\Produksi;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProduksiProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $products = Product::orderBy('product_name')->get();
+
+        return view('produksi.product.index', compact('products'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('produksi.product.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'product_name' => 'required|string|max:100',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
+        ]);
+
+        Product::create([
+            'product_name' => $request->product_name,
+            'description' => $request->description,
+            'price' => $request->price,
+            'stock' => 0, // stock initially 0
+        ]);
+
+        return redirect()->route('produksi.product.index')
+            ->with('success', 'Produk berhasil ditambahkan!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Product $product)
     {
-        //
+        return view('produksi.product.edit', compact('product'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function update(Request $request, Product $product)
     {
-        //
+        $request->validate([
+            'product_name' => 'required|string|max:100',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
+        ]);
+
+        $product->update([
+            'product_name' => $request->product_name,
+            'description' => $request->description,
+            'price' => $request->price,
+        ]);
+
+        return redirect()->route('produksi.product.index')
+            ->with('success', 'Produk berhasil diperbarui!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(Product $product)
     {
-        //
-    }
+        $product->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('produksi.product.index')
+            ->with('success', 'Produk berhasil dihapus!');
     }
 }

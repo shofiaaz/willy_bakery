@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\DailyProduction;
 use App\Models\ProductUsage;
 use App\Models\RawMaterial;
+use App\Models\InventoryLog;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,74 +45,76 @@ class ProduksiDashboardController extends Controller
 
     private function generateDashboard($startDate, $endDate)
     {
-        // =======================
-        // KPI 1 — Total production batches
-        // =======================
-        $totalProductionBatches = DailyProduction::whereBetween('production_date', [
-                $startDate->toDateString(),
-                $endDate->toDateString(),
-            ])
-            ->sum('quantity_produced');
+        $startTimestamp = $startDate->copy()->startOfDay();
+        $endTimestamp   = $endDate->copy()->endOfDay();
 
-        // LAST PERIOD for growth comparison
-        $prevStart = (clone $startDate)->subDays($startDate->diffInDays($endDate) + 1);
-        $prevEnd   = (clone $startDate)->subDay();
+        // ---------------------------
+        // KPI 1 — Production totals
+        // ---------------------------
+        $totalProductionBatches = DailyProduction::whereBetween(
+            'production_date',
+            [$startDate->toDateString(), $endDate->toDateString()]
+        )->sum('quantity_produced');
 
-        $prevProduction = DailyProduction::whereBetween('production_date', [
-                $prevStart->toDateString(),
-                $prevEnd->toDateString(),
-            ])
-            ->sum('quantity_produced');
+        // Previous period
+        $days = $startDate->diffInDays($endDate) + 1;
+
+        $prevStart = $startDate->copy()->subDays($days);
+        $prevEnd   = $startDate->copy()->subDay();
+
+        $prevProduction = DailyProduction::whereBetween(
+            'production_date',
+            [$prevStart->toDateString(), $prevEnd->toDateString()]
+        )->sum('quantity_produced');
 
         $productionGrowth = $prevProduction > 0
             ? round((($totalProductionBatches - $prevProduction) / $prevProduction) * 100)
             : 100;
 
-        // =======================
-        // KPI 2 — Raw material usage
-        // =======================
-        $usedRawMaterials = ProductUsage::whereBetween('created_at', [$startDate, $endDate])
-            ->sum('quantity_used');
 
-        $prevUsedRawMaterials = ProductUsage::whereBetween('created_at', [$prevStart, $prevEnd])
-            ->sum('quantity_used');
+        // ---------------------------
+        // KPI 2 — Raw material usage
+        // ---------------------------
+        $usedRawMaterials = ProductUsage::whereBetween(
+            'created_at',
+            [$startTimestamp, $endTimestamp]
+        )->sum('quantity_used');
+
+        $prevUsedRawMaterials = ProductUsage::whereBetween(
+            'created_at',
+            [$prevStart->copy()->startOfDay(), $prevEnd->copy()->endOfDay()]
+        )->sum('quantity_used');
 
         $materialUsageChange = $prevUsedRawMaterials > 0
             ? round((($usedRawMaterials - $prevUsedRawMaterials) / $prevUsedRawMaterials) * 100)
             : 100;
 
-        // =======================
-        // KPI 3 — Low stock items
-        // Define your stock threshold here (example: < 50 units)
-        // =======================
+
+        // ---------------------------
+        // KPI 3 — Low stock
+        // ---------------------------
         $lowStockCount = RawMaterial::where('stock', '<', 50)->count();
 
-        // =======================
-        // CHART 1 — Production volume graph
-        // =======================
-        $productionChart = DailyProduction::select(
-                DB::raw('DATE(production_date) as date'),
-                DB::raw('SUM(quantity_produced) as total')
-            )
-            ->whereBetween('production_date', [
-                $startDate->toDateString(),
-                $endDate->toDateString()
-            ])
+
+        // ---------------------------
+        // CHART 1 — Production graph
+        // ---------------------------
+        $productionChart = DailyProduction::selectRaw('DATE(production_date) as date, SUM(quantity_produced) as total')
+            ->whereBetween('production_date', [$startDate->toDateString(), $endDate->toDateString()])
             ->groupBy('date')
-            ->orderBy('date', 'ASC')
+            ->orderBy('date')
             ->get();
 
-        // =======================
-        // CHART 2 — Raw material usage graph
-        // =======================
-        $materialChart = ProductUsage::select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('SUM(quantity_used) as total')
-            )
-            ->whereBetween('created_at', [$startDate, $endDate])
+
+        // ---------------------------
+        // CHART 2 — Material usage
+        // ---------------------------
+        $materialChart = ProductUsage::selectRaw('DATE(created_at) as date, SUM(quantity_used) as total')
+            ->whereBetween('created_at', [$startTimestamp, $endTimestamp])
             ->groupBy('date')
-            ->orderBy('date', 'ASC')
+            ->orderBy('date')
             ->get();
+
 
         return view('produksi.dashboard', [
             'totalProductionBatches' => $totalProductionBatches,
@@ -129,4 +132,4 @@ class ProduksiDashboardController extends Controller
             'endDate'                => $endDate->format('Y-m-d'),
         ]);
     }
-}
+    }
