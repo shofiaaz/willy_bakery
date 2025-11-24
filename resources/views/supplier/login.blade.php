@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Supplier - Toko Roti</title>
+    <title>Login Supplier - Willy Bakery</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -58,17 +58,16 @@
 
     <a href="{{ route('home') }}"
     class="absolute top-6 left-6 text-bread-700 hover:text-bread-900 text-sm font-semibold flex items-center">
-    <i class="fas fa-arrow-left mr-2"></i> Kembali
+        <i class="fas fa-arrow-left mr-2"></i> Kembali
     </a>
-
 
     <div class="relative z-10 w-full max-w-md">
         <div class="text-center mb-8">
             <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-bread-500 to-bread-700 mb-4 card-shadow">
-                <i class="fas fa-bread-slice text-white text-3xl"></i>
+                <i class="fas fa-truck text-white text-3xl"></i>
             </div>
             <h1 class="text-3xl font-bold text-bread-800">Willy Bakery</h1>
-            <p class="text-bread-600 mt-2">Supplier Panel Login</p>
+            <p class="text-bread-600 mt-2">Login Panel Supplier</p>
         </div>
 
         <div class="bg-white rounded-2xl card-shadow p-8">
@@ -93,48 +92,45 @@
                 </div>
             @endif
 
-            <form action="{{ route('owner.login.submit') }}" method="POST">
+            <form action="{{ route('supplier.login.post') }}" method="POST">
                 @csrf
 
                 <div class="mb-6">
                     <label class="block text-bread-700 font-semibold mb-2 flex items-center">
-                        <i class="fas fa-envelope mr-2 text-bread-500"></i>
-                        Email Address
+                        <i class="fas fa-user mr-2 text-bread-500"></i>
+                        Nama Kontak
                     </label>
                     <div class="relative">
                         <input
-                            type="email"
-                            name="email"
+                            type="text"
+                            name="contact_person"
                             class="w-full border border-bread-200 rounded-xl p-4 pl-12 bg-bread-50 input-focus transition-all duration-200 focus:bg-white"
-                            placeholder="owner@rotilezat.com"
+                            placeholder="Masukkan nama kontak"
                             required
-                            value="{{ old('email') }}"
+                            value="{{ old('contact_person') }}"
                         >
                         <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-bread-400">
-                            <i class="fas fa-user-circle"></i>
+                            <i class="fas fa-id-card"></i>
                         </div>
                     </div>
                 </div>
 
                 <div class="mb-6">
                     <label class="block text-bread-700 font-semibold mb-2 flex items-center">
-                        <i class="fas fa-lock mr-2 text-bread-500"></i>
-                        Password
+                        <i class="fas fa-phone mr-2 text-bread-500"></i>
+                        Nomor Telepon
                     </label>
                     <div class="relative">
                         <input
-                            type="password"
-                            name="password"
-                            class="w-full border border-bread-200 rounded-xl p-4 pl-12 pr-12 bg-bread-50 input-focus transition-all duration-200 focus:bg-white"
-                            placeholder="Masukkan password"
+                            type="text"
+                            name="phone"
+                            class="w-full border border-bread-200 rounded-xl p-4 pl-12 bg-bread-50 input-focus transition-all duration-200 focus:bg-white"
+                            placeholder="Masukkan nomor telepon"
                             required
                         >
                         <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-bread-400">
-                            <i class="fas fa-key"></i>
+                            <i class="fas fa-phone-alt"></i>
                         </div>
-                        <button type="button" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-bread-400 hover:text-bread-600" onclick="togglePassword()">
-                            <i class="fas fa-eye" id="password-toggle"></i>
-                        </button>
                     </div>
                 </div>
 
@@ -143,9 +139,6 @@
                         <input type="checkbox" name="remember" class="rounded border-bread-300 text-bread-600 focus:ring-bread-500">
                         <span class="ml-2 text-sm">Ingat saya</span>
                     </label>
-                    <a href="#" class="text-sm text-bread-600 hover:text-bread-800 transition-colors duration-200">
-                        Lupa password?
-                    </a>
                 </div>
 
                 <button
@@ -157,7 +150,6 @@
                 </button>
             </form>
 
-            <!-- Additional Info -->
             <div class="mt-6 pt-6 border-t border-bread-100 text-center">
                 <p class="text-bread-500 text-sm">
                     <i class="fas fa-shield-alt mr-1"></i>
@@ -166,52 +158,11 @@
             </div>
         </div>
 
-        <!-- Footer -->
         <div class="text-center mt-6">
             <p class="text-bread-500 text-sm">
-                &copy; 2025 Roti Lezat. All rights reserved.
+                &copy; 2025 Willy Bakery. All rights reserved.
             </p>
         </div>
     </div>
-
-    <script>
-        function togglePassword() {
-            const passwordInput = document.querySelector('input[name="password"]');
-            const toggleIcon = document.getElementById('password-toggle');
-
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const formCard = document.querySelector('.bg-white');
-            formCard.style.transform = 'translateY(20px)';
-            formCard.style.opacity = '0';
-
-            setTimeout(() => {
-                formCard.style.transition = 'all 0.5s ease-out';
-                formCard.style.transform = 'translateY(0)';
-                formCard.style.opacity = '1';
-            }, 100);
-        });
-
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('focus', function() {
-                this.parentElement.classList.add('ring-2', 'ring-bread-200');
-            });
-
-            input.addEventListener('blur', function() {
-                this.parentElement.classList.remove('ring-2', 'ring-bread-200');
-            });
-        });
-    </script>
 </body>
-
 </html>

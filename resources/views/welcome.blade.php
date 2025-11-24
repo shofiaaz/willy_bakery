@@ -254,8 +254,7 @@
                         <i class="fas fa-chevron-right"></i>
                     </div>
                 </a>
-
-                <a href="#" class="link-card">
+                <a href="{{ route('supplier.login') }}" class="link-card">
                     <div class="link-icon">
                         <i class="fas fa-truck"></i>
                     </div>

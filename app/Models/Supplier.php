@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class Supplier extends Model
+class Supplier extends Authenticatable
 {
+    use Notifiable;
+
     protected $primaryKey = 'supplier_id';
     protected $fillable = ['supplier_name', 'email', 'phone', 'address'];
     public $timestamps = true;

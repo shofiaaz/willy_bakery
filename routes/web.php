@@ -75,16 +75,21 @@ Route::prefix('produksi')->name('produksi.')->group(function () {
 // ======================
 Route::prefix('supplier')->name('supplier.')->group(function () {
 
-    Route::get('login', [SupplierAuthController::class, 'showLoginForm'])->name('login');
-    Route::post('login', [SupplierAuthController::class, 'login'])->name('login.submit');
-    Route::post('logout', [SupplierAuthController::class, 'logout'])->name('logout');
+    Route::get('/login', [App\Http\Controllers\Supplier\SupplierAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [App\Http\Controllers\Supplier\SupplierAuthController::class, 'login'])->name('login.post');
+    Route::post('/logout', [App\Http\Controllers\Supplier\SupplierAuthController::class, 'logout'])->name('logout');
 
-    Route::middleware('auth')->group(function () {
-
-        Route::get('dashboard', [SupplierDashboardController::class, 'index'])->name('dashboard');
-        Route::resource('purchases', SupplierPurchaseController::class);
+    Route::middleware('auth:supplier')->group(function () {
+        Route::get('/dashboard', [App\Http\Controllers\Supplier\SupplierDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard/filter', [App\Http\Controllers\Supplier\SupplierDashboardController::class, 'filter'])->name('dashboard.filter');
+        Route::resource('/purchases', App\Http\Controllers\Supplier\SupplierPurchaseController::class);
+        Route::get('purchases', [SupplierPurchaseController::class, 'index'])->name('purchases.index');
+        Route::get('purchases/{id}/edit', [SupplierPurchaseController::class, 'edit'])->name('purchases.edit');
+        Route::put('purchases/{id}', [SupplierPurchaseController::class, 'update'])->name('purchases.update');
     });
 });
+
+
 
 
 
