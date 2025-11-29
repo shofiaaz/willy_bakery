@@ -118,18 +118,13 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#"
-                        class="flex items-center py-3 px-4 rounded-lg hover:bg-bread-700 transition-colors duration-200">
+                <li>
+                    <a href="{{ route('owner.stock.index') }}"
+                        class="flex items-center py-3 px-4 rounded-lg hover:bg-bread-700 transition-colors duration-200 {{ request()->routeIs('owner.stock.*') ? 'active-nav' : '' }}">
                         <i class="fas fa-boxes w-5 mr-3 text-bread-300"></i>
                         <span>Stok Produk</span>
                     </a>
                 </li>
-                <li>
-                    <a href="#"
-                        class="flex items-center py-3 px-4 rounded-lg hover:bg-bread-700 transition-colors duration-200">
-                        <i class="fas fa-users w-5 mr-3 text-bread-300"></i>
-                        <span>Manajemen Karyawan</span>
-                    </a>
                 </li>
                 <li>
                     <a href="{{ route('owner.reports.index') }}"

@@ -33,6 +33,7 @@
                         <i class="fas fa-chart-bar mr-2"></i>
                         Forecasting
                     </button>
+
                 </nav>
             </div>
         </div>
@@ -393,67 +394,118 @@
                         </div>
                     </div>
 
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0">
-                                <i class="fas fa-info-circle text-blue-500 text-xl mt-1 mr-3"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-lg font-semibold text-blue-800 mb-2">Modul Forecasting</h4>
-                                <p class="text-blue-700">
-                                    Modul ini sedang dalam tahap pengembangan. Fitur prediksi tren penjualan dan kebutuhan
-                                    stok
-                                    menggunakan model S-ARIMA akan segera tersedia untuk membantu perencanaan bisnis yang
-                                    lebih akurat.
-                                </p>
-                            </div>
+                    @isset($message)
+                        <div class="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-lg mb-4">
+                            {{ $message }}
                         </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-bread-25 rounded-lg p-4 border border-bread-200">
+                    @elseif(isset($forecastDates))
+                        {{-- 📈 Forecast Chart Section --}}
+                        <div class="bg-bread-25 rounded-lg p-4 border border-bread-200 mb-6">
                             <div class="flex items-center mb-3">
                                 <div class="w-8 h-8 rounded-lg bg-bread-100 flex items-center justify-center mr-3">
                                     <i class="fas fa-chart-line text-bread-600"></i>
                                 </div>
                                 <h5 class="font-semibold text-bread-800">Prediksi Penjualan</h5>
                             </div>
-                            <p class="text-bread-600 text-sm">Forecast penjualan harian/mingguan berdasarkan data historis
+                            <p class="text-bread-600 text-sm mb-4">
+                                Forecast penjualan harian/mingguan berdasarkan data historis.
                             </p>
+                            <div class="relative" style="height:400px;">
+                                <canvas id="forecastChart"></canvas>
+                            </div>
                         </div>
-                        <div class="bg-bread-25 rounded-lg p-4 border border-bread-200">
+
+                        {{-- 📦 Stock Optimization Section --}}
+                        <div class="bg-bread-25 rounded-lg p-4 border border-bread-200 mb-6">
                             <div class="flex items-center mb-3">
                                 <div class="w-8 h-8 rounded-lg bg-bread-100 flex items-center justify-center mr-3">
                                     <i class="fas fa-boxes text-bread-600"></i>
                                 </div>
                                 <h5 class="font-semibold text-bread-800">Optimasi Stok</h5>
                             </div>
-                            <p class="text-bread-600 text-sm">Rekomendasi jumlah stok optimal berdasarkan prediksi
-                                permintaan</p>
+                            <p class="text-bread-600 text-sm mb-4">
+                                Rekomendasi stok berdasarkan prediksi permintaan per produk.
+                            </p>
+
+                            @if(!empty($productForecasts))
+                                <table class="w-full text-sm mb-4">
+                                    <thead>
+                                        <tr class="bg-bread-50 text-bread-700">
+                                            <th class="py-2 px-3 text-left">Produk</th>
+                                            <th class="py-2 px-3 text-right">Rata-rata Prediksi</th>
+                                            <th class="py-2 px-3 text-right">Stok Disarankan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-bread-100">
+                                        @foreach($productForecasts as $name => $pf)
+                                            @php $suggested = ceil($pf['avg'] * 1.2); @endphp
+                                            <tr>
+                                                <td class="py-2 px-3 text-bread-800 font-medium">{{ $name }}</td>
+                                                <td class="py-2 px-3 text-right">{{ number_format($pf['avg'], 0, ',', '.') }}</td>
+                                                <td class="py-2 px-3 text-right font-semibold text-green-700">{{ $suggested }} pcs</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            @endif
+
+                            <div class="bg-green-50 border border-green-200 p-4 rounded-lg">
+                                <p class="text-green-800 text-lg font-bold">
+                                    Total Stok Optimal Disarankan: {{ $recommendedStock }} pcs
+                                </p>
+                            </div>
                         </div>
-                    </div>
+                    @else
+                        <div class="text-center py-12">
+                            <i class="fas fa-chart-line text-bread-400 text-5xl mb-4"></i>
+                            <h4 class="text-xl font-semibold text-bread-800 mb-2">Belum Ada Hasil Forecast</h4>
+                            <p class="text-bread-600 mb-6">Klik tombol di bawah ini untuk menjalankan analisis dan prediksi penjualan.</p>
+                            <form action="{{ route('owner.reports.forecast') }}" method="GET">
+                                <button type="submit"
+                                    class="inline-flex items-center px-6 py-3 bg-bread-600 hover:bg-bread-700 text-white rounded-lg font-medium transition-colors duration-200 shadow-sm">
+                                    <i class="fas fa-play mr-2"></i> Generate Forecast
+                                </button>
+                            </form>
+                        </div>
+                    @endisset
                 </div>
             </div>
-        </div>
-    </div>
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // 🔹 Automatically open the correct tab if provided by controller (e.g., forecast)
+            const activeTab = "{{ $activeTab ?? 'stok' }}";
             const tabButtons = document.querySelectorAll('.tab-button');
             const tabPanes = document.querySelectorAll('.tab-pane');
 
+            // Initialize tabs based on activeTab
+            tabButtons.forEach(btn => {
+                const tabName = btn.getAttribute('data-tab');
+                const pane = document.getElementById(`${tabName}-tab`);
+                if (tabName === activeTab) {
+                    btn.classList.add('active');
+                    pane.classList.remove('hidden');
+                } else {
+                    btn.classList.remove('active');
+                    pane.classList.add('hidden');
+                }
+            });
+
+            // Handle manual tab clicks
             tabButtons.forEach(button => {
                 button.addEventListener('click', function () {
                     const targetTab = this.getAttribute('data-tab');
-
                     tabButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
-
                     tabPanes.forEach(pane => pane.classList.add('hidden'));
                     document.getElementById(`${targetTab}-tab`).classList.remove('hidden');
                 });
             });
 
+            // Existing chart.js logic
             const ctx = document.getElementById("salesChart").getContext("2d");
             new Chart(ctx, {
                 type: "bar",
@@ -470,18 +522,12 @@
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
+                    plugins: { legend: { display: false }},
                     scales: {
                         y: {
                             beginAtZero: true,
                             ticks: {
-                                callback: function (value) {
-                                    return 'Rp ' + value.toLocaleString('id-ID');
-                                }
+                                callback: value => 'Rp ' + value.toLocaleString('id-ID')
                             }
                         }
                     }
@@ -489,6 +535,90 @@
             });
         });
     </script>
+    <script>
+    let forecastChart = null;
+
+    function renderForecastChart() {
+        const chartEl = document.getElementById("forecastChart");
+        if (!chartEl) return;
+
+        const productForecasts = {!! json_encode($productForecasts ?? []) !!};
+        if (!productForecasts || Object.keys(productForecasts).length === 0) {
+            console.warn("⚠️ No forecast data available.");
+            return;
+        }
+
+        // Use first product's dates for X-axis
+        const firstProduct = Object.keys(productForecasts)[0];
+        const labels = productForecasts[firstProduct]?.dates ?? [];
+
+        const randomColor = () => 
+            `rgba(${Math.floor(Math.random()*200)}, ${Math.floor(Math.random()*200)}, ${Math.floor(Math.random()*200)},`;
+
+        const datasets = Object.entries(productForecasts).map(([name, pf]) => {
+            const color = randomColor();
+            return {
+                label: name,
+                data: pf.values,
+                borderColor: color + "1)",
+                backgroundColor: color + "0.25)",
+                tension: 0.3,
+                borderWidth: 2,
+                fill: false
+            };
+        });
+
+        if (forecastChart) forecastChart.destroy();
+        forecastChart = new Chart(chartEl.getContext("2d"), {
+            type: "line",
+            data: { labels, datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: "📈 Prediksi Penjualan per Produk (14 Hari ke Depan)",
+                        font: { size: 16 },
+                        color: "#1f2937"
+                    },
+                    legend: { position: "bottom" }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: "Jumlah Terjual (pcs)" },
+                        ticks: { callback: v => v.toLocaleString("id-ID") + " pcs" }
+                    },
+                    x: {
+                        title: { display: true, text: "Tanggal" }
+                    }
+                }
+            }
+        });
+    }
+
+    // 🟢 Trigger after tab becomes visible (with delay)
+    document.addEventListener("DOMContentLoaded", () => {
+        const forecastBtn = document.querySelector("[data-tab='forecast']");
+        const forecastPane = document.getElementById("forecast-tab");
+
+        const activateAndRender = () => {
+            if (forecastPane && !forecastPane.classList.contains("hidden")) {
+                setTimeout(renderForecastChart, 300); // small delay ensures layout is ready
+            }
+        };
+
+        // When switching tab manually
+        if (forecastBtn) forecastBtn.addEventListener("click", activateAndRender);
+
+        // If it's already active from backend
+        if ("{{ $activeTab ?? '' }}" === "forecast") {
+            activateAndRender();
+        }
+    });
+    </script>
+
 
     <style>
         .tab-button {

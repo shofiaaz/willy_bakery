@@ -12,6 +12,7 @@ use App\Http\Controllers\Owner\AuthController;
 use App\Http\Controllers\Owner\DashboardController;
 use App\Http\Controllers\Owner\PurchaserOrderController;
 use App\Http\Controllers\Owner\ReportController;
+use App\Http\Controllers\Owner\ProductController;
 use App\Http\Controllers\Owner\SaleController;
 use App\Http\Controllers\Owner\SupplierController;
 use Illuminate\Support\Facades\Route;
@@ -37,8 +38,12 @@ Route::prefix('owner')->name('owner.')->group(function () {
         Route::resource('suppliers', SupplierController::class);
         Route::resource('purchases', PurchaserOrderController::class);
         Route::resource('sales', SaleController::class);
+        Route::get('stock', [ProductController::class, 'index'])->name('stock.index');
+        Route::get('stock/{product}', [ProductController::class, 'show'])->name('stock.show');
+
 
         Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('reports/forecast', [ReportController::class, 'forecasting'])->name('reports.forecast');
         Route::get('reports/pdf/{type}', [ReportController::class, 'exportPdf'])->name('reports.pdf');
         Route::get('reports/excel/{type}', [ReportController::class, 'exportExcel'])->name('reports.excel');
     });

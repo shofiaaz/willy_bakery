@@ -104,7 +104,124 @@ class ReportController extends Controller
 
     public function forecasting()
     {
-        $message = "Modul forecasting (S-ARIMA) masih dalam pengembangan.";
-        return view('owner.reports.forecast', compact('message'));
+        // Fetch recent sales data
+        $salesData = \App\Models\Sale::with('product')
+            ->select('sale_date', 'product_id', DB::raw('SUM(quantity) as quantity'))
+            ->groupBy('sale_date', 'product_id')
+            ->orderBy('sale_date')
+            ->get();
+
+
+
+        // Also load data for the other tabs
+        $materials = \App\Models\RawMaterial::select('material_name', 'stock', 'unit', 'cost_per_unit')->get();
+        $products = \App\Models\Product::select('product_name', 'stock', 'price')->get();
+        $sales = \App\Models\Sale::with(['product', 'customer'])
+            ->select('sale_id', 'product_id', 'customer_id', 'quantity', 'total', 'sale_date')
+            ->latest()->take(20)->get();
+        $purchases = \App\Models\PurchaserOrder::with('supplier')
+            ->select('order_id', 'supplier_id', 'order_date', 'total_price', 'status')
+            ->latest()->take(20)->get();
+
+        $chartData = \App\Models\Sale::select(
+            DB::raw('DATE_FORMAT(sale_date, "%Y-%m") as month'),
+            DB::raw('SUM(total) as total_sales')
+        )->groupBy('month')->orderBy('month')->get();
+
+        $chartLabels = $chartData->pluck('month');
+        $chartValues = $chartData->pluck('total_sales');
+
+        // If no sales data
+        if ($salesData->isEmpty()) {
+            $message = "Belum ada data penjualan untuk melakukan forecasting.";
+            return view('owner.reports.index', compact(
+                'materials', 'products', 'sales', 'purchases',
+                'chartLabels', 'chartValues', 'message'
+            ))->with('activeTab', 'forecast');
+        }
+
+        // Save CSV
+        $csvPath = storage_path('app/sales_data.csv');
+        $csvFile = fopen($csvPath, 'w');
+        fputcsv($csvFile, ['sale_date', 'product_name', 'quantity']);
+        foreach ($salesData as $row) {
+            fputcsv($csvFile, [
+                $row->sale_date,
+                $row->product->product_name ?? 'Unknown',
+                $row->quantity ?? 0
+            ]);
+        }
+
+        fclose($csvFile);
+
+        // Run Python
+        $pythonPath = 'C:\\laragon\\www\\willy_bakery\\.venv\\Scripts\\python.exe';
+        $scriptPath = base_path('forecasting/sarima_forecast.py');
+
+        $process = new \Symfony\Component\Process\Process([$pythonPath, $scriptPath, $csvPath]);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            $error = $process->getErrorOutput() ?: $process->getOutput();
+            $message = "Gagal menjalankan forecasting: " . $error;
+            return view('owner.reports.index', compact(
+                'materials', 'products', 'sales', 'purchases',
+                'chartLabels', 'chartValues', 'message'
+            ))->with('activeTab', 'forecast');
+        }
+
+        $result = json_decode($process->getOutput(), true);
+
+        if (isset($result['error'])) {
+            $message = "Error: " . $result['error'];
+            return view('owner.reports.index', compact(
+                'materials', 'products', 'sales', 'purchases',
+                'chartLabels', 'chartValues', 'message'
+            ))->with('activeTab', 'forecast');
+        }
+
+        $forecastDates = [];
+        $forecastValues = [];
+        $productForecasts = [];
+        $materialsForecast = [];
+        $recommendedStock = 0;
+
+        if (($result['type'] ?? '') === 'multi') {
+            foreach ($result['forecasts'] as $product => $data) {
+                $productForecasts[$product] = [
+                    'dates' => $data['dates'],
+                    'values' => $data['values'],
+                    'avg' => collect($data['values'])->avg()
+                ];
+            }
+
+            // Use first product’s data for the chart
+            if (!empty($productForecasts)) {
+                $firstProduct = array_key_first($productForecasts);
+                $forecastDates = $productForecasts[$firstProduct]['dates'];
+                $forecastValues = $productForecasts[$firstProduct]['values'];
+            }
+
+            $materialsForecast = $result['materials'] ?? [];
+            $recommendedStock = ceil(
+                collect($productForecasts)->pluck('avg')->sum() * 1.1
+            );
+        } else {
+            $forecastDates = $result['dates'] ?? [];
+            $forecastValues = $result['values'] ?? [];
+            $productForecasts = [];
+            $materialsForecast = $result['materials'] ?? [];
+            $recommendedStock = ceil(collect($forecastValues)->avg() * 1.2);
+        }
+        return view('owner.reports.index', compact(
+            'materials', 'products', 'sales', 'purchases',
+            'chartLabels', 'chartValues',
+            'forecastDates', 'forecastValues',
+            'recommendedStock', 'productForecasts', 'materialsForecast'
+        ))->with('activeTab', 'forecast');
+
+
     }
+
+
 }
