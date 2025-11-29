@@ -165,12 +165,12 @@
                                 </td>
                                 <td class="py-4 px-6">
                                     <div class="flex justify-center space-x-2">
-                                        <a href="{{ route('owner.purchases.edit', $order->order_id) }}"
+                                        {{-- <a href="{{ route('owner.purchases.edit', $order->order_id) }}"
                                             class="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg text-sm font-medium transition-colors duration-200"
                                             title="Edit Pesanan">
                                             <i class="fas fa-edit mr-1"></i>
                                             Edit
-                                        </a>
+                                        </a> --}}
                                         <form action="{{ route('owner.purchases.destroy', $order->order_id) }}" method="POST"
                                             onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini?')">
                                             @csrf

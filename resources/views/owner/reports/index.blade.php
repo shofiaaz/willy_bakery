@@ -51,7 +51,7 @@
                             </div>
                         </div>
                         <div class="flex space-x-2">
-                            <a href="{{ route('owner.reports.pdf', 'stock') }}"
+                            {{-- <a href="{{ route('owner.reports.pdf', 'stock') }}"
                                 class="inline-flex items-center px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg font-medium transition-colors duration-200">
                                 <i class="fas fa-file-pdf mr-2"></i>
                                 PDF
@@ -60,7 +60,7 @@
                                 class="inline-flex items-center px-4 py-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg font-medium transition-colors duration-200">
                                 <i class="fas fa-file-excel mr-2"></i>
                                 Excel
-                            </a>
+                            </a> --}}
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -216,7 +216,7 @@
                             </div>
                         </div>
                         <div class="flex space-x-2">
-                            <a href="{{ route('owner.reports.pdf', 'sales') }}"
+                            {{-- <a href="{{ route('owner.reports.pdf', 'sales') }}"
                                 class="inline-flex items-center px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg font-medium transition-colors duration-200">
                                 <i class="fas fa-file-pdf mr-2"></i>
                                 PDF
@@ -225,7 +225,7 @@
                                 class="inline-flex items-center px-4 py-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg font-medium transition-colors duration-200">
                                 <i class="fas fa-file-excel mr-2"></i>
                                 Excel
-                            </a>
+                            </a> --}}
                         </div>
                     </div>
                     <div class="bg-bread-25 rounded-lg p-4 mb-6 border border-bread-200">
@@ -289,7 +289,7 @@
                             </div>
                         </div>
                         <div class="flex space-x-2">
-                            <a href="{{ route('owner.reports.pdf', 'purchase') }}"
+                            {{-- <a href="{{ route('owner.reports.pdf', 'purchase') }}"
                                 class="inline-flex items-center px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg font-medium transition-colors duration-200">
                                 <i class="fas fa-file-pdf mr-2"></i>
                                 PDF
@@ -298,7 +298,7 @@
                                 class="inline-flex items-center px-4 py-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-lg font-medium transition-colors duration-200">
                                 <i class="fas fa-file-excel mr-2"></i>
                                 Excel
-                            </a>
+                            </a> --}}
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
